@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script language="JavaScript">
+
+		var SetTime = 5*60;		// 최초 설정 시간(기본 : 초)
+		function msg_time() {	// 1초씩 카운트
+			m = Math.floor(SetTime / 60) + "분 " + (SetTime % 60) + "초";	// 남은 시간 계산
+			var msg = "현재 남은 시간은 <font color='red'>" + m + "</font> 입니다.";
+			document.all.ViewTimer.innerHTML = msg;		// div 영역에 보여줌
+			SetTime--;					// 1초씩 감소
+			if (SetTime < 0) {			// 시간이 종료 되었으면..
+				clearInterval(tid);		// 타이머 해제
+				alert("종료");
+			}
+		}
+		window.onload = function TimerStart(){ tid=setInterval('msg_time()',1000) };
+        // window 가 준비되면.
+	</script>
+
+    <script type="text/javascript">
+    window.onload = function TimerStart(){ tid=setInterval('PrintTime()',1000) };
+    // 현재 시간 출력
+    function PrintTime() {
+        // 11 : 5: 00
+        // 15 : 5: 00
+        var today = new Date();
+        var amhh = 11
+        var pmhh = 15
+        var hh = today.getHours();
+        var mi = today.getMinutes();
+        var ss = today.getSeconds();
+        document.getElementById("result").innerHTML = hh + ":" + mi + ":" + ss;
+        document.getElementById("alarmBtn").style.visibility = "hidden";
+        if(hh == 14 && mi == 37) {
+        //(hh == 11 && mi == 0 && ss == 0)
+            //document.write("11시입니다. 신호 출결을 해주세요.");
+            alert('지금 신호 출석을 해주세요')
+            document.getElementById("result").innerHTML = hh + ":" + mi + ":" + ss;
+            document.getElementById("alarmBtn").style.visibility = "visible";
+            } else if(hh == 15 && mi == 0 && ss == 0){
+        }
+    }
+    // 중지를 위해 ID 보관
+    var timerId = null;
+    // 시계 시작
+    function StartClock() {
+        PrintTime();
+        timerId = setInterval(PrintTime, 1000);
+    }
+
+    // 시계 중지
+    function StopClock() {
+        if(timerId != null) {
+            clearInterval(timerId);
+        }
+    }
+    </script>
+
+    <script type="text/javascript">
+        var startdate = "2021012008";
+        var enddate = "2022012418";
+
+        var now = new Date();   //현재시간
+
+        year = now.getFullYear();   //현재시간 중 4자리 연도
+        month = now.getMonth()+1;   //현재시간 중 달. 달은 0부터 시작하기 때문에 +1
+        if((month+"").length < 2){
+            month="0"+month;   //달의 숫자가 1자리면 앞에 0을 붙임.
+        }
+        date = now.getDate();      //현재 시간 중 날짜.
+        if((date+"").length < 2){
+            date="0"+date;
+        }
+        hour = now.getHours();   //현재 시간 중 시간.
+        if((hour+"").length < 2){
+        hour="0"+hour;
+        }
+        today = year + "" + month + "" + date+ "" +hour;      //오늘 날짜 완성.
+        // 시간비교
+        if ((eval(today) > eval(startdate)) && ((eval(today) < eval(enddate))))  {
+            PrintTime();
+        }
+    </script>
+</head>
+<body>
+hello world
+<div id="ViewTimer"></div>
+
+<div id="result"></div>
+<input type="button" value="시작" onclick="StartClock();" />
+<input type="button" value="중지" onclick="StopClock();" />
+
+    <form method="POST" class="post-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form}}
+        <button type="submit" class="save btn btn-default" name="btn" value="upload" id="alarmBtn" >출석</button>
+
+    </form>
+
+</body>
+</html>
