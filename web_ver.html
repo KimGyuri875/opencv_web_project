@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        $(document).ready(function() {
+             tid=setInterval('PrintTime()',1000);
+        });
+    </script>
+    <script type="text/javascript">
+
+    function PrintTime() {
+        function alarmTime(){
+            // 11시와 3시 울린다
+            document.getElementById("alarmBtn").style.visibility = "visible";
+            document.getElementById("timeLeft").style.visibility = "visible";
+        }
+        var today = new Date();
+        var hh = today.getHours();
+        var mi = today.getMinutes();
+        var ss = today.getSeconds();
+        document.getElementById("result").innerHTML = hh + ":" + mi + ":" + ss;
+        if(hh == 16 && 3<=mi && mi <5) {
+            if(mi ==3 && ss == 0){
+                alert('지금 오전 신호 출석을 해주세요');
+            }
+            document.getElementById("timeLeft").innerHTML = 49 - mi + ":" + (60-ss);
+            alarmTime();
+        }
+        else if(hh==15 && 0<=mi && mi<5) {
+            if(mi==0 && ss == 0){
+                alert('지금 오후 신호 출석을 해주세요');
+            }
+            document.getElementById("timeLeft").innerHTML = (4 - mi) + ":" + (60-ss);
+            alarmTime();
+        }
+        else {
+            document.getElementById("alarmBtn").style.visibility = "hidden";
+            document.getElementById("timeLeft").style.visibility = "hidden";
+        }
+    }
+    </script>
+
+</head>
+<body>
+<h1>browser ver QR 출석</h1>
+ <form method="POST" class="post-form" action = "{% url 'browser'%}" >
+     {% csrf_token %}
+     {{browser_info}}
+     <button type="submit" class="save btn btn-default" name="Bbtn" value="browser" id="BrowserQrBtn">
+            BrowserQrBtn</button>
+ </form>
+
+<h1>mobile ver QR 출석</h1>
+ <form method="POST" class="post-form" action = "{% url 'mobile'%}">
+     {% csrf_token %}
+     {{mobile_info}}
+     <button type="submit" class="save btn btn-default" name="Mbtn" value="mobile" id="MobileQrBtn">
+            MobileQrBtn</button>
+ </form>
+
+<h1>신호 출석</h1>
+<form method="POST" class="post-form" action = "{% url 'alarm_check'%}">
+    {% csrf_token %}
+    {{alarm_info}}
+    <button type="submit" class="save btn btn-default" name="Abtn" value="alarm" id="alarmBtn" style="visibility:hidden;font-weight:bold">
+        출석</button>
+</form>
+<div id="result"></div>
+<div id="timeLeft" style="visibility:hidden" ></div>
+</body>
+</html>
