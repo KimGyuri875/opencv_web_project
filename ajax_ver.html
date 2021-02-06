@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        $(document).ready(function() {
+             tid=setInterval('PrintTime()',1000);
+
+             $('#Abtn').click(function() {
+                 $.ajax({
+                    url : "{% url 'alarm_ajax' %}",
+                    type : 'post',
+                    //data : script 으로 부터 받아온 정보로 서버로 보낼 내용
+                    data : {'csrfmiddlewaretoken' : '{{csrf_token}}',
+                             'flag' : $('#Abtn').val()},
+                    dataType: 'json',
+                            // 성공하면 콜백 함수가 호출된다.
+                    success : function(list){
+                        $.each(list, function(idx, data){
+                            //alert(idx+ " , " +data.id+ " , " + data.pwd)
+                            alert(data.info)
+                             $('#timeLeft').empty().append(data.info)
+                        })
+                    }
+                 })
+             })
+        });
+    </script>
+    <script type="text/javascript">
+
+    function PrintTime() {
+        function alarmTime(){
+            // 11시와 3시 울린다
+            document.getElementById("Abtn").style.visibility = "visible";
+            document.getElementById("timeLeft").style.visibility = "visible";
+        }
+        var today = new Date();
+        var hh = today.getHours();
+        var mi = today.getMinutes();
+        var ss = today.getSeconds();
+        document.getElementById("result").innerHTML = hh + ":" + mi + ":" + ss;
+        if(hh == 18 && 00<=mi && mi <59) {
+            if(mi == 12 && ss == 0){
+                alert('지금 오전 신호 출석을 해주세요');
+            }
+            document.getElementById("timeLeft").innerHTML = 49 - mi + ":" + (60-ss);
+            alarmTime();
+        }
+        else if(hh==15 && 0<=mi && mi<5) {
+            if(mi==0 && ss == 0){
+                alert('지금 오후 신호 출석을 해주세요');
+            }
+            document.getElementById("timeLeft").innerHTML = (4 - mi) + ":" + (60-ss);
+            alarmTime();
+        }
+        else {
+            document.getElementById("Abtn").style.visibility = "hidden";
+            document.getElementById("timeLeft").style.visibility = "hidden";
+        }
+    }
+    </script>
+
+</head>
+<body>
+<h1>browser ver QR 출석</h1>
+ <form method="POST" class="post-form" action = "{% url 'browser'%}" >
+     {% csrf_token %}
+     {{browser_info}}
+     <button type="submit" class="save btn btn-default" name="Bbtn" value="browser" id="BrowserQrBtn">
+            BrowserQrBtn</button>
+ </form>
+
+<h1>mobile ver QR 출석</h1>
+ <form method="POST" class="post-form" action = "{% url 'mobile'%}">
+     {% csrf_token %}
+     {{mobile_info}}
+     <button type="submit" class="save btn btn-default" name="Mbtn" value="mobile" id="MobileQrBtn">
+            MobileQrBtn</button>
+ </form>
+
+<h1>신호 출석</h1>
+<form method="POST" class="post-form">
+    <!-- action = "{% url 'alarm_check'%}" -->
+    {% csrf_token %}
+    {{alarm_info}}
+</form>
+<div id="result"></div>
+<div id="timeLeft" style="visibility:hidden" ></div>
+
+<button type="submit" name="Abtn" value="Abtn" id="Abtn" style="visibility:hidden;font-weight:bold">출석</button>
+</body>
+</html>
+
